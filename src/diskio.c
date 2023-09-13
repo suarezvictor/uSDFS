@@ -10,9 +10,15 @@
 #include "ff.h"			/* Obtains integer types */
 #include "diskio.h"		/* Declarations of disk functions */
 
+#ifndef USDFS_NO_SPI
 #include "utility/sd_spi.h"
+#endif
+#ifndef USDFS_NO_SDHC
 #include "utility/sd_sdhc.h"
+#endif
+#ifndef USDFS_NO_MSC
 #include "utility/sd_msc.h"
+#endif
 void logVar(char *s,unsigned int v);
 /*-----------------------------------------------------------------------*/
 /* Get Drive Status                                                      */
@@ -24,14 +30,18 @@ DSTATUS disk_status (
 {
 
 	switch (pdrv) {
+#ifndef USDFS_NO_SPI
 	case DEV_SPI :
 		return SPI_disk_status();
-
+#endif
+#ifndef USDFS_NO_SDHC
 	case DEV_SDHC :
 		return SDHC_disk_status();
-
+#endif
+#ifndef USDFS_NO_MSC
 	case DEV_MSC :
 		return MSC_disk_status();
+#endif
 	}
 	return STA_NOINIT;
 }
@@ -50,6 +60,7 @@ DSTATUS disk_initialize (
 	int result;
 
 	switch (pdrv) {
+#ifndef USDFS_NO_SPI
 	case DEV_SPI :
 
 		result = SPI_disk_initialize();
@@ -57,7 +68,8 @@ DSTATUS disk_initialize (
 		if(result==RES_OK) stat=0; else stat=STA_NODISK;
 
 		return stat;
-
+#endif
+#ifndef USDFS_NO_SDHC
 	case DEV_SDHC :
 		result = SDHC_disk_initialize();
 
@@ -65,7 +77,8 @@ DSTATUS disk_initialize (
 		if(result==RES_OK) stat=0; else stat=STA_NODISK;
 
 		return stat;
-
+#endif
+#ifndef USDFS_NO_MSC
 	case DEV_MSC :
 		result = MSC_disk_initialize();
 
@@ -73,6 +86,7 @@ DSTATUS disk_initialize (
 		if(result==RES_OK) stat=0; else stat=STA_NODISK;
 
 		return stat;
+#endif
 	}
 	return STA_NOINIT;
 }
@@ -93,6 +107,7 @@ DRESULT disk_read (
 	DRESULT res=RES_OK;
 	int result=0;
 	switch (pdrv) {
+#ifndef USDFS_NO_SPI
 	case DEV_SPI :
   
 		result = SPI_disk_read(buff, sector, count);
@@ -100,7 +115,8 @@ DRESULT disk_read (
  	    if(result==0) res=RES_OK; else res=RES_READERROR;
 
 		return res;
-
+#endif
+#ifndef USDFS_NO_SDHC
 	case DEV_SDHC :
 		// translate the arguments here
 
@@ -109,7 +125,8 @@ DRESULT disk_read (
 		if(result==0) res=RES_OK; else res=RES_READERROR;
 
 		return res;
-
+#endif
+#ifndef USDFS_NO_MSC
 	case DEV_MSC :
 		// translate the arguments here
 
@@ -118,7 +135,7 @@ DRESULT disk_read (
 		if(result==0) res=RES_OK; else res=RES_READERROR;
 
 		return res;
-
+#endif
 	}
 
 	return RES_PARERR;
@@ -143,6 +160,7 @@ DRESULT disk_write (
 	int result;
 
 	switch (pdrv) {
+#ifndef USDFS_NO_SPI
 	case DEV_SPI :
 		// translate the arguments here
 
@@ -151,7 +169,8 @@ DRESULT disk_write (
 		if(result==0) res=RES_OK; else res=RES_WRITEERROR;
 
 		return res;
-
+#endif
+#ifndef USDFS_NO_SDHC
 	case DEV_SDHC :
 		// translate the arguments here
 
@@ -160,7 +179,8 @@ DRESULT disk_write (
 		if(result==0) res=RES_OK; else res=RES_WRITEERROR;
 
 		return res;
-
+#endif
+#ifndef USDFS_NO_MSC
 	case DEV_MSC :
 		// translate the arguments here
 
@@ -169,6 +189,7 @@ DRESULT disk_write (
 		if(result==0) res=RES_OK; else res=RES_WRITEERROR;
 
 		return res;
+#endif
 	}
 
 	return RES_PARERR;
@@ -190,13 +211,15 @@ DRESULT disk_ioctl (
 //	DRESULT res=RES_OK;
 
 	switch (pdrv) {
+#ifndef USDFS_NO_SPI
 	case DEV_SPI :
 		return SPI_disk_ioctl(cmd,buff);
 
 		// Process of the command for the SPI drive
 
 //		return res;
-
+#endif
+#ifndef USDFS_NO_SDHC
 	case DEV_SDHC :
 		return SDHC_disk_ioctl(cmd,buff);
 
@@ -204,6 +227,8 @@ DRESULT disk_ioctl (
 
 //		return res;
 
+#endif
+#ifndef USDFS_NO_MSC
 	case DEV_MSC :
 		return SDHC_disk_ioctl(cmd,buff);
 
@@ -211,6 +236,7 @@ DRESULT disk_ioctl (
 
 //		return res;
 
+#endif
 		}
 
 	return RES_PARERR;
